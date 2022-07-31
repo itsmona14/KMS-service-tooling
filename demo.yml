@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: demo-webapp
+  name: demo-webapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo-webapp
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: demo-webapp
+    spec:
+      containers:
+      - image: sidecar1:1.0
+        name: sidecar-container1
+        imagePullPolicy: IfNotPresent
+        resources: {}
+      - image: sidecar2:1.0
+        name: sidecar-container2
+        imagePullPolicy: IfNotPresent
+        resources: {}
+      - image: springboot-k8s:1.0
+        name: main-container
+        resources: {}
+        imagePullPolicy: IfNotPresent
+      volumes:
+      - name: var-logs
+        emptyDir: {}
+status: {}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-webapp
+  labels:
+    run: demo-webapp
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+  selector:
+    app: demo-webapp
+  type: NodePort
